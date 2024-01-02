@@ -6,24 +6,24 @@
 import numpy as np
 
 
-def entropy(input_X):
+def entropy(input_X: list[int]) -> float:
     _, counts = np.unique(input_X, return_counts=True)
     probabilities = counts / input_X.shape[0]
     return -np.sum(probabilities * np.log2(probabilities))
 
 
-def joint_entropy(input_X, input_Y):
+def joint_entropy(input_X: list[int], input_Y: list[int]) -> float:
     input_XY = np.concatenate((input_X[np.newaxis].T, input_Y[np.newaxis].T), axis=1)
     _, counts = np.unique(input_XY, return_counts=True, axis=0)
     probabilities = counts / input_XY.shape[0]
     return -np.sum(probabilities * np.log2(probabilities))
 
 
-def conditional_entropy(input_X, input_Y):
+def conditional_entropy(input_X: list[int], input_Y: list[int]) -> float:
     input_XY = np.concatenate((input_X[np.newaxis].T, input_Y[np.newaxis].T), axis=1)
     unique_values, counts = np.unique(input_XY, return_counts=True, axis=0)
     probabilities = counts / input_XY.shape[0]
-    y_unique_values, y_counts = np.unique(input_XY[:, 1], return_counts=True, axis=0)
+    y_unique_values, y_counts = np.unique(input_Y, return_counts=True, axis=0)
     # source : Example 2: Print First Index Position of Several Values
     # (https://www.geeksforgeeks.org/how-to-find-the-index-of-value-in-numpy-array/)
     sorter = np.argsort(y_unique_values)
@@ -34,5 +34,5 @@ def conditional_entropy(input_X, input_Y):
     return -np.sum(probabilities * np.log2(probabilities / y_probabilities))
 
 
-def mutual_information(input_X, input_Y):
+def mutual_information(input_X: list[int], input_Y: list[int]) -> float:
     return entropy(input_X) - conditional_entropy(input_X, input_Y)

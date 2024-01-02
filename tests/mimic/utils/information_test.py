@@ -17,8 +17,8 @@ class TestEntropyMethods(unittest.TestCase):
     def setUp(self):
         rng = np.random.default_rng()
         size = rng.integers(low=50, high=100)
-        self.arr1 = rng.integers(low=0, high=2, size=size)
-        self.arr2 = rng.integers(low=0, high=2, size=size)
+        self.arr1 = rng.choice(a=10, size=size)
+        self.arr2 = rng.choice(a=10, size=size)
 
     def test_commutativejointentropy(self):
         self.assertAlmostEqual(

@@ -7,7 +7,7 @@ from .minheap import MinHeapQueue
 from .information import mutual_information
 
 
-def build_mst(start_node, node_names, sample_X):
+def build_mst(start_node: int, node_names: list[int], sample_X: list[list[int]]) -> list[tuple[int,int]]:
     edges = list()
     chosen_node = start_node
     processed_nodes = set()
