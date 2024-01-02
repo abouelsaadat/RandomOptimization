@@ -22,7 +22,7 @@ def nqueens(input_x):
 
 
 ENTRY_LENGTH = 50
-best_sample, best_score = simanneal_algo.optimize(
+best_sample, best_score = genetic_algo.optimize(
     {feat: list(range(ENTRY_LENGTH)) for feat in range(ENTRY_LENGTH)},
     lambda input: nqueens(input),
 )

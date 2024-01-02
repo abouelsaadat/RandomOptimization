@@ -5,6 +5,7 @@
 
 import numpy as np
 from .crossover import singlepoint
+from ..utils.sampling import initialize_uniform, one_variable_triangular_rounded
 
 
 def optimize(
@@ -27,7 +28,9 @@ def optimize(
     for iteration in _iter_:
         if sample_X is None:
             # Generate a uniform sample
-            sample_X = _uniform_sample(pop_size, feat_dict, _new_seed(rng))
+            sample_X = initialize_uniform(
+                feat_dict=feat_dict, size=pop_size, seed=_new_seed(rng)
+            )
             evals, best_index, median_index = _get_evals(sample_X, eval_func)
         if verbose:
             print(
@@ -86,33 +89,6 @@ def _new_seed(rng):
     return rng.integers(1e5)
 
 
-def _uniform_sample(pop_size, feat_dict, seed=None):
-    rng = np.random.default_rng(seed)
-    sample_X = np.empty([pop_size, len(feat_dict)])
-    for key in feat_dict:
-        if _is_discrete_format(feat_dict[key]):
-            sample_X[:, key] = rng.choice(a=feat_dict[key], size=pop_size)
-        elif _is_continuous_format(feat_dict[key]):
-            sample_X[:, key] = rng.uniform(
-                low=min(feat_dict[key]), high=max(feat_dict[key], size=pop_size)
-            )
-        else:
-            raise TypeError(
-                "Value of the key <{key}> in features dictionary is wrong, use either tuple for continous features or list for discrete features".format(
-                    key=repr(key)
-                )
-            )
-    return sample_X
-
-
-def _is_discrete_format(available_values):
-    return type(available_values) is list and len(available_values) > 1
-
-
-def _is_continuous_format(available_values):
-    return type(available_values) is tuple and len(available_values) > 1
-
-
 def _get_evals(sample_X, eval_func):
     evals = np.asarray([eval_func(x) for x in sample_X])
     order = np.argsort(evals)
@@ -165,51 +141,8 @@ def _mutate_population(input_X, feat_dict, mutation_rate, seed=None):
         size=int(mutation_rate * len(input_X)),
         replace=False,
     ):
-        input_X[sample_indx] = _mutate_sample(
-            input_X[sample_indx], feat_dict, _new_seed(rng)
+        input_X[sample_indx] = one_variable_triangular_rounded(
+            feat_dict=feat_dict,
+            sample_x=input_X[sample_indx],
+            seed=_new_seed(rng),
         )
-
-
-def _mutate_sample(input_x, feat_dict, seed=None):
-    rng = np.random.default_rng(seed)
-    output_x = input_x.copy()
-    feat_indx = rng.integers(len(feat_dict))
-    if _is_discrete_format(feat_dict[feat_indx]):
-        output_x[feat_indx] = _mutate_discrete(
-            output_x[feat_indx], feat_dict[feat_indx], _new_seed(rng)
-        )
-    elif _is_continuous_format(feat_dict[feat_indx]):
-        output_x[feat_indx] = _mutate_continuous(
-            output_x[feat_indx], feat_dict[feat_indx], _new_seed(rng)
-        )
-    else:
-        raise TypeError(
-            "Value of the key <{feat_indx}> in features dictionary is wrong, use either tuple for continous features or list for discrete features".format(
-                feat_indx=repr(feat_indx)
-            )
-        )
-    return output_x
-
-
-def _mutate_discrete(value, available_values, seed=None):
-    rng = np.random.default_rng(seed)
-    value_index = available_values.index(value)
-    weights = [-1 * abs(value_index - itr) for itr in range(len(available_values))]
-    max_diff = -1 * min(weights) + 1
-    weights = np.asarray([weight + max_diff for weight in weights])
-    weights[value_index] = 0
-    return rng.choice(a=available_values, p=weights / np.sum(weights))
-
-
-def _mutate_continuous(value, available_values, seed=None):
-    rng = np.random.default_rng(seed)
-    temp_value = value
-    min_value = max(available_values)
-    max_value = min(available_values)
-    while abs(temp_value - value) < 0.1 * (max_value - min_value):
-        temp_value = rng.triangular(
-            min_value,
-            value,
-            max_value,
-        )
-    return temp_value

@@ -15,7 +15,7 @@ from randoptma.mimic.utils.information import (
 
 class TestEntropyMethods(unittest.TestCase):
     def setUp(self):
-        rng = np.random.default_rng()
+        rng = np.random.default_rng(None)
         size = rng.integers(low=50, high=100)
         self.arr1 = rng.choice(a=10, size=size)
         self.arr2 = rng.choice(a=10, size=size)
