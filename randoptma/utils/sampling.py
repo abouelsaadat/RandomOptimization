@@ -6,9 +6,15 @@
 import numpy as np
 
 
+def new_seed(rng):
+    return rng.integers(1e5)
+
+
 def initialize_uniform(feat_dict: dict, size: int = None, seed: int = None):
     rng = np.random.default_rng(seed)
-    sample_X = np.empty([size, len(feat_dict)])
+    sample_X = (
+        np.empty([size, len(feat_dict)]) if size else np.empty([1, len(feat_dict)])
+    )
     for key, values in feat_dict.items():
         if _is_discrete_format(values):
             sample_X[:, key] = rng.choice(a=values, size=size)
@@ -23,7 +29,7 @@ def initialize_uniform(feat_dict: dict, size: int = None, seed: int = None):
                 f"Value of the key <{key}> in features dictionary is not correct, "
                 "use either tuple for continous features or list for discrete features"
             )
-    return sample_X
+    return sample_X if size else sample_X[0]
 
 
 def one_variable_uniform(feat_dict: dict, sample_x: list, seed: int = None):

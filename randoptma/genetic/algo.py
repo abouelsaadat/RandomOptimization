@@ -5,7 +5,11 @@
 
 import numpy as np
 from .crossover import singlepoint
-from ..utils.sampling import initialize_uniform, one_variable_triangular_rounded
+from ..utils.sampling import (
+    new_seed,
+    initialize_uniform,
+    one_variable_triangular_rounded,
+)
 
 
 def optimize(
@@ -29,7 +33,7 @@ def optimize(
         if sample_X is None:
             # Generate a uniform sample
             sample_X = initialize_uniform(
-                feat_dict=feat_dict, size=pop_size, seed=_new_seed(rng)
+                feat_dict=feat_dict, size=pop_size, seed=new_seed(rng)
             )
             evals, best_index, median_index = _get_evals(sample_X, eval_func)
         if verbose:
@@ -49,16 +53,16 @@ def optimize(
                 sample_X,
                 evals,
                 base_sample_size,
-                _new_seed(rng),
+                new_seed(rng),
             )
             new_sample_X[base_sample_size:, :] = _produce_offsprings(
                 sample_X,
                 evals,
                 int(pop_size - base_sample_size),
-                lambda parents: crossover_func(parents, _new_seed(rng)),
-                _new_seed(rng),
+                lambda parents: crossover_func(parents, new_seed(rng)),
+                new_seed(rng),
             )
-            _mutate_population(new_sample_X, feat_dict, mutation_rate, _new_seed(rng))
+            _mutate_population(new_sample_X, feat_dict, mutation_rate, new_seed(rng))
             # Calculate sample evals
             new_evals, new_best_index, new_median_index = _get_evals(
                 new_sample_X, eval_func
@@ -85,10 +89,6 @@ def optimize(
 
 
 # Helper functions
-def _new_seed(rng):
-    return rng.integers(1e5)
-
-
 def _get_evals(sample_X, eval_func):
     evals = np.asarray([eval_func(x) for x in sample_X])
     order = np.argsort(evals)
@@ -144,5 +144,5 @@ def _mutate_population(input_X, feat_dict, mutation_rate, seed=None):
         input_X[sample_indx] = one_variable_triangular_rounded(
             feat_dict=feat_dict,
             sample_x=input_X[sample_indx],
-            seed=_new_seed(rng),
+            seed=new_seed(rng),
         )

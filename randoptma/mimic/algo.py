@@ -11,6 +11,7 @@ import pandas as pd
 from pgmpy.models import BayesianNetwork
 from pgmpy.estimators import BayesianEstimator
 from .utils.maxspantree import build_mst
+from ..utils.sampling import new_seed
 
 
 def optimize(
@@ -50,7 +51,7 @@ def optimize(
         is_new_sample = False
         for _ in range(n_iter_no_change):
             new_sample_X = _generate_new_samples(
-                n_samples, feat_dict, model, _new_seed(rng)
+                n_samples, feat_dict, model, new_seed(rng)
             )
             (
                 new_evals,
@@ -88,10 +89,6 @@ def optimize(
 
 
 # Helper Functions
-def _new_seed(rng):
-    return rng.integers(1e5)
-
-
 def _generate_new_samples(
     n_samples,
     feat_dict,
@@ -108,7 +105,7 @@ def _generate_new_samples(
     # Suppress console output and warnings
     with warnings.catch_warnings(), contextlib.redirect_stderr(io.StringIO()):
         warnings.simplefilter("ignore")
-        sample_X = model.simulate(n_samples=n_samples, seed=_new_seed(rng))[
+        sample_X = model.simulate(n_samples=n_samples, seed=new_seed(rng))[
             sorted_keys
         ].to_numpy()
     return sample_X
