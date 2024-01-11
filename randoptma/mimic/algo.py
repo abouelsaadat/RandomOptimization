@@ -26,13 +26,14 @@ def optimize(
 ):
     sample_X = None
     rng = np.random.default_rng(seed)
-
     _iter_ = iter(range(max_iter))
     for iteration in _iter_:
         if sample_X is None:
-            sample_X = _generate_new_samples(n_samples, feat_dict)
+            sample_X = _generate_new_samples(
+                n_samples=n_samples, feat_dict=feat_dict, seed=new_seed(rng)
+            )
             evals, best_index, median_index, top_percentile_indices = _get_evals(
-                top_percentile, sample_X, eval_func
+                top_percentile=top_percentile, sample_X=sample_X, eval_func=eval_func
             )
         if verbose:
             print(
@@ -95,7 +96,6 @@ def _generate_new_samples(
     model=None,
     seed=None,
 ):
-    rng = np.random.default_rng(seed)
     sorted_keys = sorted(feat_dict.keys())
     if model is None:
         model = BayesianNetwork()
@@ -105,7 +105,7 @@ def _generate_new_samples(
     # Suppress console output and warnings
     with warnings.catch_warnings(), contextlib.redirect_stderr(io.StringIO()):
         warnings.simplefilter("ignore")
-        sample_X = model.simulate(n_samples=n_samples, seed=new_seed(rng))[
+        sample_X = model.simulate(n_samples=n_samples, seed=seed)[
             sorted_keys
         ].to_numpy()
     return sample_X
