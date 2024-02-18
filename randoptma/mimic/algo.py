@@ -125,7 +125,7 @@ def _fit_bayesian_model(feat_dict, edges, top_sample_X, top_evals):
     sorted_keys = sorted(feat_dict.keys())
     model = BayesianNetwork(edges)
     data = pd.DataFrame(data={key: top_sample_X[:, key] for key in sorted_keys})
-    data["_weight"] = top_evals
+    data["_weight"] = top_evals - np.min(top_evals)  # make minimum zero
     model.fit(
         data,
         state_names=feat_dict,
