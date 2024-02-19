@@ -4,6 +4,7 @@
 # License: MIT
 
 import io
+import math
 import warnings
 import contextlib
 import numpy as np
@@ -62,8 +63,7 @@ def optimize(
             ) = _get_evals(top_percentile, new_sample_X, eval_func)
             if (
                 new_evals[new_best_index] > evals[best_index]
-                and new_evals[new_median_index] >= evals[median_index]
-                or new_evals[new_best_index] >= evals[best_index]
+                or math.isclose(new_evals[new_best_index], evals[best_index])
                 and new_evals[new_median_index] > evals[median_index]
             ):
                 (

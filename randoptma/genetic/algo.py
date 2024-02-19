@@ -3,6 +3,7 @@
 # Author: Mohamed Abouelsaadat
 # License: MIT
 
+import math
 import numpy as np
 from .crossover import singlepoint
 from ..utils.sampling import (
@@ -69,8 +70,7 @@ def optimize(
             )
             if (
                 new_evals[new_best_index] > evals[best_index]
-                and new_evals[new_median_index] >= evals[median_index]
-                or new_evals[new_best_index] >= evals[best_index]
+                or math.isclose(new_evals[new_best_index], evals[best_index])
                 and new_evals[new_median_index] > evals[median_index]
             ):
                 sample_X, evals, best_index, median_index, is_new_sample = (
