@@ -18,7 +18,9 @@ def optimize(
 ):
     rng = np.random.default_rng(seed)
     best_sample = None
-    n_iter_no_change = int(1.5 * len(feat_dict)) if n_iter_no_change is None else n_iter_no_change
+    n_iter_no_change = (
+        int(1.5 * len(feat_dict)) if n_iter_no_change is None else n_iter_no_change
+    )
     _iter_ = iter(range(max_iter))
     for iteration in _iter_:
         if best_sample is None:

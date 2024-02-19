@@ -4,6 +4,7 @@
 # License: MIT
 
 import math
+import warnings
 import numpy as np
 from .decay import ArithmeticGeometric
 from ..utils.sampling import new_seed, initialize_uniform, one_variable_uniform
@@ -49,6 +50,9 @@ def optimize(
                 best_sample, best_score, is_new_sample = new_sample, new_score, True
                 break
             elif next(_iter_, None) is None:
+                warnings.warn(
+                    f"Stochastic Optimizer: Maximum iterations ({max_iter}) reached and the optimization hasn't converged yet.", RuntimeWarning
+                )
                 break
         if is_new_sample == False:
             break

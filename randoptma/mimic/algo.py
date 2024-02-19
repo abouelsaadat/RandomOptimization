@@ -83,6 +83,9 @@ def optimize(
                 )
                 break
             elif next(_iter_, None) is None:
+                warnings.warn(
+                    f"Stochastic Optimizer: Maximum iterations ({max_iter}) reached and the optimization hasn't converged yet.", RuntimeWarning
+                )
                 break
         if is_new_sample == False:
             break

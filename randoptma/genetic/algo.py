@@ -4,6 +4,7 @@
 # License: MIT
 
 import math
+import warnings
 import numpy as np
 from .crossover import singlepoint
 from ..utils.sampling import (
@@ -82,6 +83,9 @@ def optimize(
                 )
                 break
             elif next(_iter_, None) is None:
+                warnings.warn(
+                    f"Stochastic Optimizer: Maximum iterations ({max_iter}) reached and the optimization hasn't converged yet.", RuntimeWarning
+                )
                 break
         if is_new_sample == False:
             break
@@ -104,10 +108,11 @@ def _next_population_base(
     seed=None,
 ):
     rng = np.random.default_rng(seed)
+    _evals_ = evals - np.min(evals)  # make minimum zero
     population_base = rng.choice(
         a=sample_X,
         size=base_sample_size,
-        p=evals / np.sum(evals),
+        p=_evals_ / np.sum(_evals_),
     )
     return population_base
 
@@ -120,10 +125,11 @@ def _produce_offsprings(
     seed=None,
 ):
     rng = np.random.default_rng(seed)
+    _evals_ = evals - np.min(evals)  # make minimum zero
     parents_pairs = rng.choice(
         a=sample_X,
         size=(offspring_size // 2, 2),
-        p=evals / np.sum(evals),
+        p=_evals_ / np.sum(_evals_),
     )
     offsprings = np.empty([offspring_size, len(sample_X[0])])
     for parents_pair_indx in range(len(parents_pairs)):
