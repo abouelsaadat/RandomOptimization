@@ -84,7 +84,8 @@ def optimize(
                 break
             elif next(_iter_, None) is None:
                 warnings.warn(
-                    f"Stochastic Optimizer: Maximum iterations ({max_iter}) reached and the optimization hasn't converged yet.", RuntimeWarning
+                    f"Stochastic Optimizer: Maximum iterations ({max_iter}) reached and the optimization hasn't converged yet.",
+                    RuntimeWarning,
                 )
                 break
         if is_new_sample == False:
@@ -109,6 +110,7 @@ def _next_population_base(
 ):
     rng = np.random.default_rng(seed)
     _evals_ = evals - np.min(evals)  # make minimum zero
+    _evals_ += 0.01 * np.max(_evals_)  # add minute value
     population_base = rng.choice(
         a=sample_X,
         size=base_sample_size,
@@ -126,6 +128,7 @@ def _produce_offsprings(
 ):
     rng = np.random.default_rng(seed)
     _evals_ = evals - np.min(evals)  # make minimum zero
+    _evals_ += 0.01 * np.max(_evals_)  # add minute value
     parents_pairs = rng.choice(
         a=sample_X,
         size=(offspring_size // 2, 2),
