@@ -139,7 +139,7 @@ def _next_keep_population(
     seed=None,
 ):
     rng = np.random.default_rng(seed)
-    _evals_ = evals - np.min(evals)  # make minimum zero
+    _evals_ = evals.astype(float) - np.min(evals)  # make minimum zero
     _evals_ += 0.01 * np.max(_evals_)  # add minute value
     keep_population = rng.choice(
         a=sample_X,
@@ -158,7 +158,7 @@ def _produce_offsprings(
     n_jobs=None,
 ):
     rng = np.random.default_rng(seed)
-    _evals_ = evals - np.min(evals)  # make minimum zero
+    _evals_ = evals.astype(float) - np.min(evals)  # make minimum zero
     _evals_ += 0.01 * np.max(_evals_)  # add minute value
     parents_pairs = rng.choice(
         a=sample_X,
