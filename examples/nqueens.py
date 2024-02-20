@@ -27,4 +27,4 @@ best_sample, best_score = genetic_algo.optimize(
     lambda input: nqueens(input),
 )
 print("best score: ", best_score)
-print("best sample: ", "-".join(str(int(pos)) for pos in best_sample))
+print("best sample: ", ";".join(str(int(pos)) for pos in best_sample))

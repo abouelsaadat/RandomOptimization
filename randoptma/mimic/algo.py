@@ -43,7 +43,7 @@ def optimize(
                 "\nbest score:",
                 evals[best_index],
                 "\nbest sample:",
-                "-".join(str(feature_val) for feature_val in sample_X[best_index]),
+                ";".join(str(feature_val) for feature_val in sample_X[best_index]),
             )
         dict_keys = [*feat_dict]
         top_evals = evals[top_percentile_indices]

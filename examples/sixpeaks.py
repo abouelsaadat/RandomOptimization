@@ -69,7 +69,7 @@ if False:
 
     x_values = [bitfield(n, sample_size) for n in x_values]
     y_values = np.array([sixpeaks(value, sample_t_peak) for value in x_values])
-    x_values = ["-".join(str(int(bit)) for bit in value) for value in x_values]
+    x_values = [";".join(str(int(bit)) for bit in value) for value in x_values]
 
     plt.ylabel("cost function")
     plt.plot(x_values, y_values)
@@ -83,4 +83,4 @@ best_sample, best_score = genetic_algo.optimize(
     lambda input: sixpeaks(input, ENTRY_T_PEAK),
 )
 print("best score: ", best_score)
-print("best sample: ", "-".join(str(int(bit)) for bit in best_sample))
+print("best sample: ", ";".join(str(int(bit)) for bit in best_sample))

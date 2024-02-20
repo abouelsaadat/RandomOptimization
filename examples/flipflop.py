@@ -22,4 +22,4 @@ best_sample, best_score = genetic_algo.optimize(
     lambda input: flipflop(input),
 )
 print("best score: ", best_score)
-print("best sample: ", "-".join(str(int(bit)) for bit in best_sample))
+print("best sample: ", ";".join(str(int(bit)) for bit in best_sample))

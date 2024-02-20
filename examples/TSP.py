@@ -38,7 +38,7 @@ best_sample, best_score = mimic_algo.optimize(
 print("smallest distance: ", -best_score)
 print(
     "best travelling order: ",
-    "-".join(str(int(bit)) for bit in np.argsort(best_sample)),
+    ";".join(str(int(bit)) for bit in np.argsort(best_sample))
 )
 
 ordered_positions = positions[np.argsort(best_sample)]
