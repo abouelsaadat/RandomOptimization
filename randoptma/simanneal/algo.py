@@ -36,7 +36,7 @@ def optimize(
                 "\nbest score:",
                 best_score,
                 "\nbest sample:",
-                "-".join(str(int(bit)) for bit in best_sample),
+                "-".join(str(feature_val) for feature_val in best_sample),
             )
         is_new_sample = False
         for _ in range(n_iter_no_change):

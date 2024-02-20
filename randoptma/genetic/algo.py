@@ -70,7 +70,7 @@ def optimize(
                 "\nbest score:",
                 evals[best_index],
                 "\nbest sample:",
-                "-".join(str(int(bit)) for bit in sample_X[best_index]),
+                "-".join(str(feature_val) for feature_val in sample_X[best_index]),
             )
         # Build new population
         is_new_sample = False
