@@ -3,12 +3,13 @@
 # Author: Mohamed Abouelsaadat
 # License: MIT
 
+
+from sklearn.neural_network import MLPClassifier
+from sklearn.datasets import make_classification
 import randoptma.mimic.algo as mimic_algo
 import randoptma.genetic.algo as genetic_algo
 import randoptma.simanneal.algo as simanneal_algo
 import randoptma.randhillclimb.algo as randhillclimb_algo
-from sklearn.neural_network import MLPClassifier
-from sklearn.datasets import make_classification
 
 
 def calculate_length_layers(layers):

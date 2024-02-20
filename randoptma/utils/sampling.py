@@ -6,8 +6,8 @@
 import numpy as np
 
 
-def new_seed(rng):
-    return rng.integers(1e5)
+def new_seed(rng, size=None):
+    return rng.integers(1e5, size=size)
 
 
 def initialize_uniform(feat_dict: dict, size: int = None, seed: int = None):
