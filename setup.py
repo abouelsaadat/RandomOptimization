@@ -13,5 +13,5 @@ setuptools.setup(
     description="Description of my package",
     packages=["randoptma"],
     install_requires=["numpy >= 1.20", "matplotlib", "pgmpy"],
-    python_requires=">=3.8, <=3.11",
+    python_requires=">=3.9, <=3.11",
 )
