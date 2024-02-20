@@ -27,7 +27,6 @@ ENTRY_LENGTH = 50
 best_sample, best_score = genetic_algo.optimize(
     {feat: list(range(ENTRY_LENGTH)) for feat in range(ENTRY_LENGTH)},
     lambda input: nqueens(input),
-    n_jobs=10,
     seed=0,
 )
 end = time.time()

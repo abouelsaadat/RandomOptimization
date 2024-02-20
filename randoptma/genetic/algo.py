@@ -6,7 +6,6 @@
 import math
 import warnings
 import numpy as np
-from multiprocess import Pool
 from .crossover import singlepoint
 from ..utils.sampling import (
     new_seed,
@@ -26,7 +25,6 @@ def optimize(
     max_iter=1000,
     seed=None,
     verbose=False,
-    n_jobs=None,
 ):
     """Implementation of Genetic Algorithm based on Mitchell, T. M. (1997). Machine learning (Vol. 1). McGraw-hill New York.
 
@@ -44,7 +42,6 @@ def optimize(
     max_iter: total max iterations allowed
     seed: random seed to be used in random numbers generation, if None an arbitrary random seed is chosen
     verbose: boolean value to switch on/off the printing of each iteration results
-    n_jobs: number of processes to spawn, must be a positive integer or None for max
 
     Return
     ------
@@ -62,7 +59,7 @@ def optimize(
             sample_X = initialize_uniform(
                 feat_dict=feat_dict, size=pop_size, seed=new_seed(rng)
             )
-            evals, best_index, median_index = _get_evals(sample_X, eval_func, n_jobs)
+            evals, best_index, median_index = _get_evals(sample_X, eval_func)
         if verbose:
             print(
                 "\niteration:",
@@ -88,12 +85,8 @@ def optimize(
                 replace_size,
                 crossover_func,
                 new_seed(rng),
-                n_jobs,
             )
-            original_new_sample_X = new_sample_X.copy()
-            _mutate_population(
-                new_sample_X, feat_dict, mutation_rate, new_seed(rng), n_jobs
-            )
+            _mutate_population(new_sample_X, feat_dict, mutation_rate, new_seed(rng))
             # Calculate sample evals
             new_evals, new_best_index, new_median_index = _get_evals(
                 new_sample_X, eval_func
@@ -123,9 +116,8 @@ def optimize(
 
 
 # Helper functions
-def _get_evals(sample_X, eval_func, n_jobs=None):
-    with Pool(n_jobs) as p:
-        evals = np.asarray(p.map(eval_func, sample_X))
+def _get_evals(sample_X, eval_func):
+    evals = np.asarray([eval_func(sample_x) for sample_x in sample_X])
     order = np.argsort(evals)
     best_index = order[len(sample_X) - 1]
     median_index = order[len(sample_X) // 2]
@@ -155,7 +147,6 @@ def _produce_offsprings(
     offspring_size,
     crossover_func,
     seed=None,
-    n_jobs=None,
 ):
     rng = np.random.default_rng(seed)
     _evals_ = evals.astype(float) - np.min(evals)  # make minimum zero
@@ -165,31 +156,27 @@ def _produce_offsprings(
         size=(offspring_size // 2, 2),
         p=_evals_ / np.sum(_evals_),
     )
-    parents_pairs_seeds = list(
-        zip(parents_pairs, new_seed(rng, size=len(parents_pairs)))
+    parents_pairs_seeds = zip(parents_pairs, new_seed(rng, size=len(parents_pairs)))
+    offsprings = np.asarray(
+        [
+            crossover_func(*parents_pair_seed)
+            for parents_pair_seed in parents_pairs_seeds
+        ]
     )
-    with Pool(n_jobs) as p:
-        offsprings = np.asarray(p.starmap(crossover_func, parents_pairs_seeds))
     return offsprings.reshape(-1, offsprings.shape[-1])  # collapse one dimension
 
 
-def _mutate_population(input_X, feat_dict, mutation_rate, seed=None, n_jobs=None):
+def _mutate_population(input_X, feat_dict, mutation_rate, seed=None):
     rng = np.random.default_rng(seed)
     indices = rng.choice(
         a=len(input_X),
         size=int(mutation_rate * len(input_X)),
         replace=False,
     )
-    indices_seeds = np.concatenate(
-        (indices[:, np.newaxis], new_seed(rng, size=len(indices))[:, np.newaxis]),
-        axis=1,
+    indices_seeds = zip(indices, new_seed(rng, size=len(indices)))
+    input_X[indices] = np.asarray(
+        [
+            one_variable_triangular_rounded(feat_dict, input_X[indx], indx_seed)
+            for indx, indx_seed in indices_seeds
+        ]
     )
-    with Pool(n_jobs) as p:
-        input_X[indices] = np.asarray(
-            p.map(
-                lambda input: one_variable_triangular_rounded(
-                    feat_dict, input_X[input[0]], input[1]
-                ),
-                indices_seeds,
-            )
-        )
