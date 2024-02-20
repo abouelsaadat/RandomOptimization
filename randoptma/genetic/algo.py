@@ -86,7 +86,7 @@ def optimize(
                 sample_X,
                 evals,
                 replace_size,
-                lambda parents: crossover_func(parents, new_seed(rng)),
+                crossover_func,
                 new_seed(rng),
                 n_jobs,
             )
@@ -165,8 +165,11 @@ def _produce_offsprings(
         size=(offspring_size // 2, 2),
         p=_evals_ / np.sum(_evals_),
     )
+    parents_pairs_seeds = list(
+        zip(parents_pairs, new_seed(rng, size=len(parents_pairs)))
+    )
     with Pool(n_jobs) as p:
-        offsprings = np.asarray(p.map(crossover_func, parents_pairs))
+        offsprings = np.asarray(p.starmap(crossover_func, parents_pairs_seeds))
     return offsprings.reshape(-1, offsprings.shape[-1])  # collapse one dimension
 
 

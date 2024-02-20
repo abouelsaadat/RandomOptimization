@@ -3,6 +3,7 @@
 # Author: Mohamed Abouelsaadat
 # License: MIT
 
+import time
 import randoptma.mimic.algo as mimic_algo
 import randoptma.genetic.algo as genetic_algo
 import randoptma.simanneal.algo as simanneal_algo
@@ -21,10 +22,15 @@ def nqueens(input_x):
     return len(queens)
 
 
+start = time.time()
 ENTRY_LENGTH = 50
 best_sample, best_score = genetic_algo.optimize(
     {feat: list(range(ENTRY_LENGTH)) for feat in range(ENTRY_LENGTH)},
     lambda input: nqueens(input),
+    n_jobs=10,
+    seed=0,
 )
+end = time.time()
+print(end - start)
 print("best score: ", best_score)
 print("best sample: ", ";".join(str(int(pos)) for pos in best_sample))
