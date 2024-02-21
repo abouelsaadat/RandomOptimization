@@ -3,7 +3,7 @@
 # Author: Mohamed Abouelsaadat
 # License: MIT
 
-
+import time
 from sklearn.neural_network import MLPClassifier
 from sklearn.datasets import make_classification
 import randoptma.mimic.algo as mimic_algo
@@ -25,6 +25,7 @@ def pack_weights(flattened_array, layers):
     coefs = list()
     intercepts = list()
     for itr in range(1, len(layers)):
+        # Fill in weights matrix
         length = layers[itr - 1] * layers[itr]
         coefs.append(
             flattened_array[indx : indx + length].reshape(
@@ -32,10 +33,9 @@ def pack_weights(flattened_array, layers):
             )
         )
         indx += length
-    for itr in range(1, len(layers)):
-        length = layers[itr]
-        intercepts.append(flattened_array[indx : indx + length])
-        indx += length
+        # Fill in bias vector
+        intercepts.append(flattened_array[indx : indx + layers[itr]])
+        indx += layers[itr]
     return coefs, intercepts
 
 
@@ -45,17 +45,16 @@ def evaluate_mlp_clf(mlp_clf, coefs, intercepts, input_X, input_y):
 
 
 X, y = make_classification(n_samples=100, random_state=1)
-clf = MLPClassifier(random_state=1, max_iter=1).fit(X, y)
+clf = MLPClassifier(random_state=1, max_iter=300).fit(X, y)
 layers = (clf.n_features_in_, *clf.get_params()["hidden_layer_sizes"], clf.n_outputs_)
-print("score before fitting:", clf.score(X, y))
+print("default score:", clf.score(X, y))
 
+start = time.time()
 ENTRY_LENGTH = calculate_length_layers(layers)
 best_sample, best_score = genetic_algo.optimize(
     {feat: (-1, 1) for feat in range(ENTRY_LENGTH)},
     lambda input: evaluate_mlp_clf(clf, *pack_weights(input, layers), X, y),
 )
-print("score after fitting:", best_score)
-print(
-    "score after fitting:",
-    evaluate_mlp_clf(clf, *pack_weights(best_sample, layers), X, y),
-)
+end = time.time()
+print("elapsed time:", end - start)
+print("RO score:", best_score)

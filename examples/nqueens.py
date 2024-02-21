@@ -30,6 +30,6 @@ best_sample, best_score = genetic_algo.optimize(
     seed=0,
 )
 end = time.time()
-print(end - start)
+print("elapsed time:", end - start)
 print("best score: ", best_score)
 print("best sample: ", ";".join(str(int(pos)) for pos in best_sample))
