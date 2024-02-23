@@ -6,10 +6,10 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-import randoptma.mimic.algo as mimic_algo
-import randoptma.genetic.algo as genetic_algo
-import randoptma.simanneal.algo as simanneal_algo
-import randoptma.randhillclimb.algo as randhillclimb_algo
+import randoptma.algorithms.mimic.algo as mimic_algo
+import randoptma.algorithms.genetic.algo as genetic_algo
+import randoptma.algorithms.simanneal.algo as simanneal_algo
+import randoptma.algorithms.randhillclimb.algo as randhillclimb_algo
 
 
 def euclidean_distance(pointA, pointB):

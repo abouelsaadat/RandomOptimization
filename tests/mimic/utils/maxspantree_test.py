@@ -4,7 +4,7 @@
 # License: MIT
 
 import unittest
-from randoptma.mimic.utils.maxspantree import build_mst
+from randoptma.algorithms.mimic.utils.maxspantree import build_mst
 
 
 class TestMaxSpanTree(unittest.TestCase):

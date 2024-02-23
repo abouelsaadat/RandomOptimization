@@ -6,10 +6,10 @@
 import time
 from sklearn.neural_network import MLPClassifier
 from sklearn.datasets import make_classification
-import randoptma.mimic.algo as mimic_algo
-import randoptma.genetic.algo as genetic_algo
-import randoptma.simanneal.algo as simanneal_algo
-import randoptma.randhillclimb.algo as randhillclimb_algo
+import randoptma.algorithms.mimic.algo as mimic_algo
+import randoptma.algorithms.genetic.algo as genetic_algo
+import randoptma.algorithms.simanneal.algo as simanneal_algo
+import randoptma.algorithms.randhillclimb.algo as randhillclimb_algo
 
 
 def calculate_length_layers(layers):

@@ -3,9 +3,9 @@
 # Author: Mohamed Abouelsaadat
 # License: MIT
 
-import randoptma.mimic.algo as mimic_algo
-import randoptma.genetic.algo as genetic_algo
-import randoptma.simanneal.algo as simanneal_algo
+import randoptma.algorithms.mimic.algo as mimic_algo
+import randoptma.algorithms.genetic.algo as genetic_algo
+import randoptma.algorithms.simanneal.algo as simanneal_algo
 
 
 def flipflop(input_x):

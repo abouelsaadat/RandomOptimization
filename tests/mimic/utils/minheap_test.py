@@ -4,7 +4,7 @@
 # License: MIT
 
 import unittest
-from randoptma.mimic.utils.minheap import MinHeapQueue
+from randoptma.algorithms.mimic.utils.minheap import MinHeapQueue
 
 
 class TestMinHeapQueue(unittest.TestCase):

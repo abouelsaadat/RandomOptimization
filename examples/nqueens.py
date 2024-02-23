@@ -4,10 +4,10 @@
 # License: MIT
 
 import time
-import randoptma.mimic.algo as mimic_algo
-import randoptma.genetic.algo as genetic_algo
-import randoptma.simanneal.algo as simanneal_algo
-import randoptma.randhillclimb.algo as randhillclimb_algo
+import randoptma.algorithms.mimic.algo as mimic_algo
+import randoptma.algorithms.genetic.algo as genetic_algo
+import randoptma.algorithms.simanneal.algo as simanneal_algo
+import randoptma.algorithms.randhillclimb.algo as randhillclimb_algo
 
 
 def nqueens(input_x):

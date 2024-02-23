@@ -5,7 +5,7 @@
 
 import unittest
 import numpy as np
-from randoptma.mimic.utils.information import (
+from randoptma.algorithms.mimic.utils.information import (
     entropy,
     joint_entropy,
     conditional_entropy,

@@ -6,7 +6,7 @@
 import unittest
 import unittest.mock
 import numpy as np
-from randoptma.utils.sampling import initialize_uniform
+from randoptma.algorithms.utils.sampling import initialize_uniform
 
 
 class TestUniformInitialization(unittest.TestCase):

@@ -5,8 +5,8 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import randoptma.mimic.algo as mimic_algo
-import randoptma.genetic.algo as genetic_algo
+import randoptma.algorithms.mimic.algo as mimic_algo
+import randoptma.algorithms.genetic.algo as genetic_algo
 
 
 def tail(b, input_x):
