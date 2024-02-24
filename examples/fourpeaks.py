@@ -73,9 +73,10 @@ if False:
 
 ENTRY_LENGTH = 50
 ENTRY_T_PEAK = int(0.3 * ENTRY_LENGTH)
-best_sample, best_score = randhillclimb_algo.optimize(
+best_sample, best_score, _, _ = randhillclimb_algo.optimize(
     {feat: [0, 1] for feat in range(ENTRY_LENGTH)},
-    lambda input: fourpeaks(input, ENTRY_T_PEAK), verbose=True,
+    lambda input: fourpeaks(input, ENTRY_T_PEAK),
+    verbose=True,
 )
 print("best score: ", best_score)
 print("best sample: ", ";".join(str(int(bit)) for bit in best_sample))

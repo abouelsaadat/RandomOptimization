@@ -70,7 +70,8 @@ def optimize(
             if (
                 new_score > best_score
                 or not math.isclose(new_score, best_score)
-                and rng.random() < math.exp((new_score - best_score) / cool_schedule.next_T())
+                and rng.random()
+                < math.exp((new_score - best_score) / cool_schedule.next_T())
             ):
                 best_sample, best_score, is_new_sample = new_sample, new_score, True
                 score_per_iter.append((iteration + 1, best_score))

@@ -78,7 +78,7 @@ if False:
 
 ENTRY_LENGTH = 50
 ENTRY_T_PEAK = int(0.3 * ENTRY_LENGTH)
-best_sample, best_score = genetic_algo.optimize(
+best_sample, best_score, _, _ = genetic_algo.optimize(
     {feat: [0, 1] for feat in range(ENTRY_LENGTH)},
     lambda input: sixpeaks(input, ENTRY_T_PEAK),
 )

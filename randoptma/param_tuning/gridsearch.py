@@ -45,9 +45,13 @@ def gridsearch(
         result.append(permutations_params[itr].copy())
         result[itr]["scores"] = list()
         result[itr]["times"] = list()
+        result[itr]["iterations"] = list()
+        result[itr]["fevals"] = list()
     for itr in range(len(scores)):
         result[itr % len(permutations_params)]["scores"].append(scores[itr][0])
         result[itr % len(permutations_params)]["times"].append(scores[itr][1])
+        result[itr % len(permutations_params)]["iterations"].append(scores[itr][2])
+        result[itr % len(permutations_params)]["fevals"].append(scores[itr][3])
     print(result)
 
 
@@ -62,7 +66,9 @@ def _executer(
     if verbose:
         print(f"{input_index + 1}/{input_size} Starting:", permutations_params)
     start = time.time()
-    _, best_score = optimizer_func(**seeded_opt_problem, **permutations_params)
+    _, best_score, score_per_iter, fevals_per_iter = optimizer_func(
+        **seeded_opt_problem, **permutations_params
+    )
     end = time.time()
     if verbose:
         print(
@@ -71,7 +77,7 @@ def _executer(
             f"Score: {best_score};",
             f"Time: {_float_format(end - start)} sec",
         )
-    return best_score, (end - start)
+    return best_score, (end - start), score_per_iter[-1][0], score_per_iter[-1][0] * fevals_per_iter
 
 
 def _float_format(val):

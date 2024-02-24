@@ -3,6 +3,7 @@
 # Author: Mohamed Abouelsaadat
 # License: MIT
 
+
 class ArithmeticGeometric:
     def __init__(self, init_T: float = 1e3, a: float = 0.8, b: float = 1e-5) -> None:
         self.T = init_T

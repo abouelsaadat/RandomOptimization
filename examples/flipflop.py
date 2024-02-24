@@ -17,7 +17,7 @@ def flipflop(input_x):
 
 
 ENTRY_LENGTH = 50
-best_sample, best_score = genetic_algo.optimize(
+best_sample, best_score, _, _ = genetic_algo.optimize(
     {feat: [0, 1] for feat in range(ENTRY_LENGTH)},
     lambda input: flipflop(input),
 )
