@@ -26,6 +26,8 @@ def optimize(
     verbose=False,
 ):
     sample_X = None
+    score_per_iter = list()
+    fevals_per_iter = int(top_percentile * n_samples)
     rng = np.random.default_rng(seed)
     _iter_ = iter(range(max_iter))
     for iteration in _iter_:
@@ -52,6 +54,8 @@ def optimize(
         model = _fit_bayesian_model(feat_dict, edges, top_sample_X, top_evals)
         is_new_sample = False
         for _ in range(n_iter_no_change):
+            if len(score_per_iter) <= iteration:
+                score_per_iter.append((iteration, evals[best_index]))
             new_sample_X = _generate_new_samples(
                 n_samples, feat_dict, model, new_seed(rng)
             )
@@ -81,8 +85,9 @@ def optimize(
                     new_top_percentile_indices,
                     True,
                 )
+                score_per_iter.append((iteration + 1, evals[best_index]))
                 break
-            elif next(_iter_, None) is None:
+            elif (iteration := next(_iter_, None)) is None:
                 warnings.warn(
                     f"Stochastic Optimizer: Maximum iterations ({max_iter}) reached and the optimization hasn't converged yet.",
                     RuntimeWarning,
@@ -90,7 +95,7 @@ def optimize(
                 break
         if is_new_sample == False:
             break
-    return sample_X[best_index], evals[best_index]
+    return sample_X[best_index], evals[best_index], score_per_iter, fevals_per_iter
 
 
 # Helper Functions

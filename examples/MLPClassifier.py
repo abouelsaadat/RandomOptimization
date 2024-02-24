@@ -4,6 +4,8 @@
 # License: MIT
 
 import time
+import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.neural_network import MLPClassifier
 from sklearn.datasets import make_classification
 import randoptma.algorithms.mimic.algo as mimic_algo
@@ -51,10 +53,15 @@ print("default score:", clf.score(X, y))
 
 start = time.time()
 ENTRY_LENGTH = calculate_length_layers(layers)
-best_sample, best_score = genetic_algo.optimize(
+best_sample, best_score, score_per_iter, fevals_per_iter = randhillclimb_algo.optimize(
     {feat: (-1, 1) for feat in range(ENTRY_LENGTH)},
     lambda input: evaluate_mlp_clf(clf, *pack_weights(input, layers), X, y),
 )
 end = time.time()
-print("elapsed time:", end - start)
-print("RO score:", best_score)
+print(f"elapsed time: {end - start}")
+print(f"RO score: {best_score}")
+print(f"score_per_iter: {score_per_iter}")
+print(f"fevals_per_iter: {fevals_per_iter}")
+score_per_iter = np.asarray(score_per_iter)
+plt.step(score_per_iter[:, 0], score_per_iter[:, 1])
+plt.show()

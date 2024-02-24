@@ -48,6 +48,8 @@ def optimize(
     sample with highest score, highest score
     """
     sample_X = None
+    score_per_iter = list()
+    fevals_per_iter = pop_size
     rng = np.random.default_rng(seed)
     replace_size = int((replaced_frac * pop_size) // 2 * 2)
     keep_size = pop_size - replace_size
@@ -72,6 +74,8 @@ def optimize(
         # Build new population
         is_new_sample = False
         for _ in range(n_iter_no_change):
+            if len(score_per_iter) <= iteration:
+                score_per_iter.append((iteration, evals[best_index]))
             new_sample_X = np.empty([pop_size, len(feat_dict)])
             new_sample_X[:keep_size, :] = _next_keep_population(
                 sample_X,
@@ -103,8 +107,9 @@ def optimize(
                     new_median_index,
                     True,
                 )
+                score_per_iter.append((iteration + 1, evals[best_index]))
                 break
-            elif next(_iter_, None) is None:
+            elif (iteration := next(_iter_, None)) is None:
                 warnings.warn(
                     f"Stochastic Optimizer: Maximum iterations ({max_iter}) reached and the optimization hasn't converged yet.",
                     RuntimeWarning,
@@ -112,7 +117,7 @@ def optimize(
                 break
         if is_new_sample == False:
             break
-    return sample_X[best_index], evals[best_index]
+    return sample_X[best_index], evals[best_index], score_per_iter, fevals_per_iter
 
 
 # Helper functions
