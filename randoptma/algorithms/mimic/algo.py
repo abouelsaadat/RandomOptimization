@@ -25,6 +25,26 @@ def optimize(
     seed=None,
     verbose=False,
 ):
+    """Implementation of MIMIC algorithm according to De Bonet, J., C. Isbell, and P. Viola (1997). MIMIC: Finding Optima by
+       Estimating Probability Densities. In *Advances in Neural Information Processing Systems* (NIPS) 9, pp. 424-430.
+
+    Params
+    ------
+    feat_dict: dictionary with keys representing features indices, and values representing valid values.
+        discrete ex : [0,1,2,3,4]
+        continuous ex : (-1, 1)
+    eval_func: evaluation function used to measure performance of each sample.
+    n_samples: positive integer value representing the sample size to be used
+    top_percentile: the fraction of samples that ought to be used in constructing the bayesian network
+    n_iter_no_change: number of iterations with no change in best score to determine convergence
+    max_iter: total max iterations allowed
+    seed: random seed to be used in random numbers generation, if None an arbitrary random seed is chosen
+    verbose: boolean value to switch on/off the printing of each iteration results
+
+    Return
+    ------
+    sample with highest score, highest score, array of iteration number vs score, number of function evaluations per iteration
+    """
     sample_X = None
     score_per_iter = list()
     fevals_per_iter = int(top_percentile * n_samples)

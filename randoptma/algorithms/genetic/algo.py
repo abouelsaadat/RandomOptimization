@@ -45,7 +45,7 @@ def optimize(
 
     Return
     ------
-    sample with highest score, highest score
+    sample with highest score, highest score, array of iteration number vs score, number of function evaluations per iteration
     """
     sample_X = None
     score_per_iter = list()

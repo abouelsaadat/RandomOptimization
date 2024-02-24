@@ -11,22 +11,42 @@ from ..utils.sampling import new_seed, initialize_uniform, one_variable_uniform
 def optimize(
     feat_dict,
     eval_func,
-    n_iter_no_change=None,
+    n_iter_no_change=100,
     update_no_change=False,
     max_iter=10000,
     max_no_restarts=100,
     seed=None,
     verbose=False,
 ):
+    """Implementation of Random Restart Hill Climbing Optimization Algorithm.
+    It starts as a normal Hill Climbing algorithm then restart from a new sample on convergence,
+    It keeps iterating till it reaches max number of allowed iterations.
+    To get the behavior of a normal Hill Climbing without any restart set `max_no_restarts` to zero.
+
+    Params
+    ------
+    feat_dict: dictionary with keys representing features indices, and values representing valid values.
+        discrete ex : [0,1,2,3,4]
+        continuous ex : (-1, 1)
+    eval_func: evaluation function used to measure performance of each sample.
+    n_iter_no_change: number of iterations with no change in best score to determine convergence
+    update_no_change: whether to update to a newer sample with same score or not while testing for convergence,
+                      This could help traverse the plateau if stuck in one.
+    max_iter: total max iterations allowed
+    max_no_restarts: max number of iterations allowed
+    seed: random seed to be used in random numbers generation, if None an arbitrary random seed is chosen
+    verbose: boolean value to switch on/off the printing of each iteration results
+
+    Return
+    ------
+    sample with highest score, highest score, array of iteration number vs score, number of function evaluations per iteration
+    """
     rng = np.random.default_rng(seed)
     restart = False
     no_restarts = 0
     best_sample = None
     score_per_iter = list()
     fevals_per_iter = 1
-    n_iter_no_change = (
-        int(1.5 * len(feat_dict)) if n_iter_no_change is None else n_iter_no_change
-    )
     _iter_ = iter(range(max_iter))
     for iteration in _iter_:
         if best_sample is None:
@@ -74,8 +94,8 @@ def optimize(
                     RuntimeWarning,
                 )
                 break
-            if update_no_change and new_score == best_score:
-                best_sample, best_score = new_sample, new_score
+            if update_no_change and new_score == local_best_score:
+                local_best_sample, local_best_score = new_sample, new_score
         if best_score < local_best_score:
             best_sample, best_score = local_best_sample, local_best_score
             score_per_iter.append((iteration + 1, best_score))

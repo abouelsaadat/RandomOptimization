@@ -4,7 +4,7 @@
 # License: MIT
 
 class ArithmeticGeometric:
-    def __init__(self, init_T: float = 1000, a: float = 0.8, b: float = 0.01) -> None:
+    def __init__(self, init_T: float = 1e3, a: float = 0.8, b: float = 1e-5) -> None:
         self.T = init_T
         self.a = a
         self.b = b
