@@ -20,6 +20,7 @@ def optimize(
     eval_func,
     n_samples=1000,
     top_percentile=0.2,
+    weighted=False,
     n_iter_no_change=10,
     max_iter=1000,
     seed=None,
@@ -36,6 +37,7 @@ def optimize(
     eval_func: evaluation function used to measure performance of each sample.
     n_samples: positive integer value representing the sample size to be used
     top_percentile: the fraction of samples that ought to be used in constructing the bayesian network
+    weighted: Whether to take into account samples' fitness scores while building dependency trees or not
     n_iter_no_change: number of iterations with no change in best score to determine convergence
     max_iter: total max iterations allowed
     seed: random seed to be used in random numbers generation, if None an arbitrary random seed is chosen
@@ -71,7 +73,7 @@ def optimize(
         top_evals = evals[top_percentile_indices]
         top_sample_X = sample_X[top_percentile_indices]
         edges = build_mst(rng.choice(dict_keys), dict_keys, top_sample_X)
-        model = _fit_bayesian_model(feat_dict, edges, top_sample_X, top_evals)
+        model = _fit_bayesian_model(feat_dict, edges, top_sample_X, top_evals, weighted)
         is_new_sample = False
         for _ in range(n_iter_no_change):
             if len(score_per_iter) <= iteration:
@@ -150,16 +152,17 @@ def _get_evals(top_percentile, sample_X, eval_func):
     return evals, best_index, median_index, top_percentile_indices
 
 
-def _fit_bayesian_model(feat_dict, edges, top_sample_X, top_evals):
+def _fit_bayesian_model(feat_dict, edges, top_sample_X, top_evals, weighted):
     sorted_keys = sorted(feat_dict.keys())
     model = BayesianNetwork(edges)
     data = pd.DataFrame(data={key: top_sample_X[:, key] for key in sorted_keys})
-    data["_weight"] = top_evals - np.min(top_evals)  # make minimum zero
+    if weighted:
+        data["_weight"] = top_evals - np.min(top_evals)  # make minimum zero
     model.fit(
         data,
         state_names=feat_dict,
         estimator=BayesianEstimator,
         prior_type="K2",
-        weighted=True,
+        weighted=weighted,
     )
     return model
