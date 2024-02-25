@@ -10,7 +10,7 @@ from .crossover import singlepoint
 from ..utils.sampling import (
     new_seed,
     initialize_uniform,
-    one_variable_triangular_rounded,
+    one_variable_uniform,
 )
 
 
@@ -181,7 +181,7 @@ def _mutate_population(input_X, feat_dict, mutation_rate, seed=None):
     indices_seeds = zip(indices, new_seed(rng, size=len(indices)))
     input_X[indices] = np.asarray(
         [
-            one_variable_triangular_rounded(feat_dict, input_X[indx], indx_seed)
+            one_variable_uniform(feat_dict, input_X[indx], indx_seed)
             for indx, indx_seed in indices_seeds
         ]
     )

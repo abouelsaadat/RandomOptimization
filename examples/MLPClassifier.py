@@ -53,7 +53,7 @@ print("default score:", clf.score(X, y))
 
 start = time.time()
 ENTRY_LENGTH = calculate_length_layers(layers)
-best_sample, best_score, score_per_iter, fevals_per_iter = simanneal_algo.optimize(
+best_sample, best_score, score_per_iter, fevals_per_iter = genetic_algo.optimize(
     {feat: (-1, 1) for feat in range(ENTRY_LENGTH)},
     lambda input: evaluate_mlp_clf(clf, *pack_weights(input, layers), X, y),
 )

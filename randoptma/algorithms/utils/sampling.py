@@ -33,6 +33,7 @@ def initialize_uniform(feat_dict: dict, size: int = None, seed: int = None):
 
 
 def one_variable_uniform(feat_dict: dict, sample_x: list, seed: int = None):
+    """Take a sample, then randomly change a feature of its features using a uniform distribution"""
     rng = np.random.default_rng(seed)
     new_sample_x = sample_x.copy()
     feat_indx = rng.integers(len(feat_dict))
