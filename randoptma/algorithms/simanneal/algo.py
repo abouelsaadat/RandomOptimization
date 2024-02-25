@@ -15,7 +15,6 @@ def optimize(
     eval_func,
     cool_schedule=ArithmeticGeometric(),
     n_iter_no_change=1000,
-    update_no_change=False,
     max_iter=10000,
     seed=None,
     verbose=False,
@@ -29,7 +28,6 @@ def optimize(
         continuous ex : (-1, 1)
     eval_func: evaluation function used to measure performance of each sample.
     cool_schedule: temprature cooling schedule to be used.
-    n_iter_no_change: number of iterations with no change in best score to determine convergence
     update_no_change: whether to update to a newer sample with same score or not while testing for convergence,
                       This could help traverse the plateau if stuck in one.
     max_iter: total max iterations allowed
@@ -67,23 +65,20 @@ def optimize(
                 feat_dict=feat_dict, sample_x=best_sample, seed=new_seed(rng)
             )
             new_score = eval_func(new_sample)
-            if (
-                new_score > best_score
-                or not math.isclose(new_score, best_score)
-                and rng.random()
-                < math.exp((new_score - best_score) / cool_schedule.next_T())
+            if new_score > best_score or rng.random() < math.exp(
+                (new_score - best_score) / cool_schedule.next_T()
             ):
-                best_sample, best_score, is_new_sample = new_sample, new_score, True
-                score_per_iter.append((iteration + 1, best_score))
-                break
+                is_not_close = not math.isclose(new_score, best_score)
+                best_sample, best_score, is_new_sample = new_sample, new_score, is_not_close
+                if is_not_close:
+                    score_per_iter.append((iteration + 1, best_score))
+                    break
             elif (iteration := next(_iter_, None)) is None:
                 warnings.warn(
                     f"Stochastic Optimizer: Maximum iterations ({max_iter}) reached and the optimization hasn't converged yet.",
                     RuntimeWarning,
                 )
                 break
-            if update_no_change and math.isclose(new_score, best_score):
-                best_sample, best_score = new_sample, new_score
         if is_new_sample == False:
             break
     return best_sample, best_score, score_per_iter, fevals_per_iter
