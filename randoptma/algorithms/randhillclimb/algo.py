@@ -12,16 +12,17 @@ def optimize(
     feat_dict,
     eval_func,
     n_iter_no_change=100,
+    n_restarts_no_change=2,
     update_no_change=False,
     max_iter=10000,
-    max_no_restarts=100,
+    max_restarts=100,
     seed=None,
     verbose=False,
 ):
     """Implementation of Random Restart Hill Climbing Optimization Algorithm.
     It starts as a normal Hill Climbing algorithm then restart from a new sample on convergence,
     It keeps iterating till it reaches max number of allowed iterations.
-    To get the behavior of a normal Hill Climbing without any restart set `max_no_restarts` to zero.
+    To get the behavior of a normal Hill Climbing without any restart set `max_restarts` to zero.
 
     Params
     ------
@@ -30,10 +31,11 @@ def optimize(
         continuous ex : (-1, 1)
     eval_func: evaluation function used to measure performance of each sample.
     n_iter_no_change: number of iterations with no change in best score to determine convergence
+    n_restarts_no_change: number of restarts after which the search should end if no improvement happened
     update_no_change: whether to update to a newer sample with same score or not while testing for convergence,
                       This could help traverse the plateau if stuck in one.
     max_iter: total max iterations allowed
-    max_no_restarts: max number of iterations allowed
+    max_restarts: max number of iterations allowed
     seed: random seed to be used in random numbers generation, if None an arbitrary random seed is chosen
     verbose: boolean value to switch on/off the printing of each iteration results
 
@@ -43,7 +45,8 @@ def optimize(
     """
     rng = np.random.default_rng(seed)
     restart = False
-    no_restarts = 0
+    n_restarts = 0
+    restarts_since_update = 0
     best_sample = None
     score_per_iter = list()
     fevals_per_iter = 1
@@ -86,7 +89,8 @@ def optimize(
                 )
                 if restart:
                     restart = False
-                    no_restarts += 1
+                    n_restarts += 1
+                    restarts_since_update += 1
                 break
             elif (iteration := next(_iter_, None)) is None:
                 warnings.warn(
@@ -97,10 +101,14 @@ def optimize(
             if update_no_change and new_score == local_best_score:
                 local_best_sample, local_best_score = new_sample, new_score
         if best_score < local_best_score:
+            restarts_since_update = 0
             best_sample, best_score = local_best_sample, local_best_score
             score_per_iter.append((iteration + 1, best_score))
         if is_new_sample == False:
-            if no_restarts < max_no_restarts:
+            if (
+                restarts_since_update < n_restarts_no_change
+                and n_restarts < max_restarts
+            ):
                 restart = True
             else:
                 break
