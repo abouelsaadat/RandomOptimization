@@ -30,13 +30,18 @@ def optimize(
         discrete ex : [0,1,2,3,4]
         continuous ex : (-1, 1)
     eval_func: evaluation function used to measure performance of each sample.
-    n_iter_no_change: number of iterations with no change in best score to determine convergence
-    n_restarts_no_change: number of restarts after which the search should end if no improvement happened
-    update_no_change: whether to update to a newer sample with same score or not while testing for convergence,
-                      This could help traverse the plateau if stuck in one.
+    n_iter_no_change: number of iterations with no change in best score to
+                      determine convergence for single hill climbing searches
+    n_restarts_no_change: number of restarts after which the search should end
+                          if no improvement was captured
+    update_no_change: whether to update to a newer sample with same score or
+                      not while testing for convergence, This could help traverse
+                      the plateau if the search is stuck in one.
     max_iter: total max iterations allowed
-    max_restarts: max number of iterations allowed
-    seed: random seed to be used in random numbers generation, if None an arbitrary random seed is chosen
+    max_restarts: max number of restarts allowed, value of 1 makes it
+                  equivalent to single run of hill climbing
+    seed: random seed to be used in random numbers generation, if None an arbitrary
+          random value would be used as a seed.
     verbose: boolean value to switch on/off the printing of each iteration results
 
     Return
