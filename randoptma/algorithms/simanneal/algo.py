@@ -68,9 +68,13 @@ def optimize(
             if new_score > best_score or rng.random() < math.exp(
                 (new_score - best_score) / cool_schedule.next_T()
             ):
-                is_not_close = not math.isclose(new_score, best_score)
-                best_sample, best_score, is_new_sample = new_sample, new_score, is_not_close
-                if is_not_close:
+                new_score_better = new_score > best_score
+                best_sample, best_score, is_new_sample = (
+                    new_sample,
+                    new_score,
+                    new_score_better,
+                )
+                if new_score_better:
                     score_per_iter.append((iteration + 1, best_score))
                     break
             elif (iteration := next(_iter_, None)) is None:

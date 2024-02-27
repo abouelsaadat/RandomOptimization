@@ -14,7 +14,7 @@ class Logarithmic:
 
     def next_T(self):
         self.t += 1
-        return math.max(self.c / math.log(1 + self.t), self.min_val)
+        return max(self.c / math.log(1 + self.t), self.min_val)
 
 
 class Geometric:
@@ -27,7 +27,7 @@ class Geometric:
 
     def next_T(self):
         self.T = self.a * self.T
-        return math.max(self.T, self.min_val)
+        return max(self.T, self.min_val)
 
 
 class Linear:
@@ -39,7 +39,7 @@ class Linear:
 
     def next_T(self):
         self.T = self.T - self.step
-        return math.max(self.T, self.min_val)
+        return max(self.T, self.min_val)
 
 
 class ArithmeticGeometric:
