@@ -65,24 +65,20 @@ def optimize(
                 feat_dict=feat_dict, sample_x=best_sample, seed=new_seed(rng)
             )
             new_score = eval_func(new_sample)
-            if new_score > best_score or rng.random() < math.exp(
-                (new_score - best_score) / cool_schedule.next_T()
-            ):
-                new_score_better = new_score > best_score
-                best_sample, best_score, is_new_sample = (
-                    new_sample,
-                    new_score,
-                    new_score_better,
-                )
-                if new_score_better:
-                    score_per_iter.append((iteration + 1, best_score))
-                    break
+            if new_score > best_score:
+                best_sample, best_score, is_new_sample = new_sample, new_score, True
+                score_per_iter.append((iteration + 1, best_score))
+                break
             elif (iteration := next(_iter_, None)) is None:
                 warnings.warn(
                     f"Stochastic Optimizer: Maximum iterations ({max_iter}) reached and the optimization hasn't converged yet.",
                     RuntimeWarning,
                 )
                 break
+            if rng.random() < math.exp(
+                (new_score - best_score) / cool_schedule.next_T()
+            ):
+                best_sample, best_score = new_sample, new_score
         if is_new_sample == False:
             break
     return best_sample, best_score, score_per_iter, fevals_per_iter
