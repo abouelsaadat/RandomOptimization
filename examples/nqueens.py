@@ -17,17 +17,15 @@ def nqueens(input_x):
             if input_x[itr] == input_x[jtr] or (jtr - itr) == abs(
                 input_x[jtr] - input_x[itr]
             ):
-                queens.discard(itr)
                 queens.discard(jtr)
     return len(queens)
 
 
 start = time.time()
 ENTRY_LENGTH = 50
-best_sample, best_score, _, _ = genetic_algo.optimize(
+best_sample, best_score, *_ = simanneal_algo.optimize(
     {feat: list(range(ENTRY_LENGTH)) for feat in range(ENTRY_LENGTH)},
     lambda input: nqueens(input),
-    seed=0,
 )
 end = time.time()
 print("elapsed time:", end - start)

@@ -12,6 +12,6 @@ setuptools.setup(
     author_email="mohamed.abouelsaadat@gmail.com",
     description="Description of my package",
     packages=["randoptma"],
-    install_requires=["numpy >= 1.20", "matplotlib", "pgmpy"],
+    install_requires=["numpy >= 1.20", "matplotlib", "pgmpy", "multiprocess"],
     python_requires=">=3.9, <=3.11",
 )

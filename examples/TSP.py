@@ -31,7 +31,7 @@ def TSP(input_x, positions):
 ENTRY_LENGTH = 10
 positions = np.random.default_rng().uniform(0, 100, (ENTRY_LENGTH, 2))
 plt.scatter(positions[:, 0], positions[:, 1])
-best_sample, best_score, _, _ = mimic_algo.optimize(
+best_sample, best_score, *_ = mimic_algo.optimize(
     {feat: list(range(ENTRY_LENGTH)) for feat in range(ENTRY_LENGTH)},
     lambda input: TSP(input, positions),
 )
