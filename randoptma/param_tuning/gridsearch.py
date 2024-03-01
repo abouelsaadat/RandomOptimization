@@ -84,8 +84,8 @@ def _executer(
     return (
         best_score,
         (end - start),
-        score_per_iter[-1][0],
-        score_per_iter[-1][0] * fevals_per_iter,
+        (score_per_iter[-1][0] + 1),
+        (score_per_iter[-1][0] + 1) * fevals_per_iter,
     )
 
 

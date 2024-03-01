@@ -43,6 +43,7 @@ def optimize(
     best_sample = None
     score_per_iter = list()
     fevals_per_iter = 1
+    max_idle_iters = 1
     _iter_ = iter(range(max_iter))
     for iteration in _iter_:
         if best_sample is None:
@@ -58,7 +59,7 @@ def optimize(
                 ";".join(str(feature_val) for feature_val in best_sample),
             )
         is_new_sample = False
-        for _ in range(n_iter_no_change):
+        for idle_iters in range(n_iter_no_change):
             if len(score_per_iter) <= iteration:
                 score_per_iter.append((iteration, best_score))
             new_sample = one_variable_uniform(
@@ -83,5 +84,9 @@ def optimize(
             ):
                 best_sample, best_score = new_sample, new_score
         if is_new_sample == False:
+            last_elements_count = n_iter_no_change - max_idle_iters
+            del score_per_iter[-last_elements_count:]
             break
+        else:
+            max_idle_iters = max(max_idle_iters, idle_iters)
     return best_sample, best_score, score_per_iter, fevals_per_iter

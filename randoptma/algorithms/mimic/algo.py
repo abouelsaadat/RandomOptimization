@@ -50,6 +50,7 @@ def optimize(
     sample_X = None
     score_per_iter = list()
     fevals_per_iter = int(top_percentile * n_samples)
+    max_idle_iters = 1
     rng = np.random.default_rng(seed)
     _iter_ = iter(range(max_iter))
     for iteration in _iter_:
@@ -75,7 +76,7 @@ def optimize(
         edges = build_mst(rng.choice(dict_keys), dict_keys, top_sample_X)
         model = _fit_bayesian_model(feat_dict, edges, top_sample_X, top_evals, weighted)
         is_new_sample = False
-        for _ in range(n_iter_no_change):
+        for idle_iters in range(n_iter_no_change):
             if len(score_per_iter) <= iteration:
                 score_per_iter.append((iteration, evals[best_index]))
             new_sample_X = _generate_new_samples(
@@ -116,7 +117,11 @@ def optimize(
                 )
                 break
         if is_new_sample == False:
+            last_elements_count = n_iter_no_change - max_idle_iters
+            del score_per_iter[-last_elements_count:]
             break
+        else:
+            max_idle_iters = max(max_idle_iters, idle_iters)
     return sample_X[best_index], evals[best_index], score_per_iter, fevals_per_iter
 
 

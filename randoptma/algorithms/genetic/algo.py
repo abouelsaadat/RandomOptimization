@@ -53,6 +53,7 @@ def optimize(
     rng = np.random.default_rng(seed)
     replace_size = int((replaced_frac * pop_size) // 2 * 2)
     keep_size = pop_size - replace_size
+    max_idle_iters = 1
 
     _iter_ = iter(range(max_iter))
     for iteration in _iter_:
@@ -73,7 +74,7 @@ def optimize(
             )
         # Build new population
         is_new_sample = False
-        for _ in range(n_iter_no_change):
+        for idle_iters in range(n_iter_no_change):
             if len(score_per_iter) <= iteration:
                 score_per_iter.append((iteration, evals[best_index]))
             new_sample_X = np.empty([pop_size, len(feat_dict)])
@@ -116,7 +117,11 @@ def optimize(
                 )
                 break
         if is_new_sample == False:
+            last_elements_count = n_iter_no_change - max_idle_iters
+            del score_per_iter[-last_elements_count:]
             break
+        else:
+            max_idle_iters = max(max_idle_iters, idle_iters)
     return sample_X[best_index], evals[best_index], score_per_iter, fevals_per_iter
 
 

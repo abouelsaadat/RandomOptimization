@@ -38,7 +38,7 @@ def optimize(
                       not while testing for convergence, This could help traverse
                       the plateau if the search is stuck in one.
     max_iter: total max iterations allowed
-    max_restarts: max number of restarts allowed, value of 1 makes it
+    max_restarts: max number of restarts allowed, value of 0 makes it
                   equivalent to single run of hill climbing
     seed: random seed to be used in random numbers generation, if None an arbitrary
           random value would be used as a seed.
@@ -55,6 +55,8 @@ def optimize(
     best_sample = None
     score_per_iter = list()
     fevals_per_iter = 1
+    max_idle_iters = 1
+    end_pos = []
     _iter_ = iter(range(max_iter))
     for iteration in _iter_:
         if best_sample is None:
@@ -73,7 +75,7 @@ def optimize(
                 "\nbest sample:",
                 ";".join(str(feature_val) for feature_val in best_sample),
             )
-        for _ in range(n_iter_no_change):
+        for idle_iters in range(n_iter_no_change):
             if len(score_per_iter) <= iteration:
                 score_per_iter.append((iteration, best_score))
             is_new_sample = False
@@ -110,11 +112,17 @@ def optimize(
             best_sample, best_score = local_best_sample, local_best_score
             score_per_iter.append((iteration + 1, best_score))
         if is_new_sample == False:
+            end_pos.append(len(score_per_iter))
             if (
                 restarts_since_update < n_restarts_no_change
                 and n_restarts < max_restarts
             ):
                 restart = True
             else:
+                last_elements_count = n_iter_no_change - max_idle_iters
+                for indx in end_pos[::-1]:
+                    del score_per_iter[indx - last_elements_count : indx]
                 break
+        else:
+            max_idle_iters = max(max_idle_iters, idle_iters)
     return best_sample, best_score, score_per_iter, fevals_per_iter
