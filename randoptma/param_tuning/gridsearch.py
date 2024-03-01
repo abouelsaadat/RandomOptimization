@@ -6,7 +6,9 @@
 import time
 import itertools
 import numpy as np
-from multiprocess import Pool
+from multiprocess import Pool, Lock
+
+print_mutex = Lock()
 
 
 def gridsearch(
@@ -52,7 +54,7 @@ def gridsearch(
         result[itr % len(permutations_params)]["times"].append(scores[itr][1])
         result[itr % len(permutations_params)]["iterations"].append(scores[itr][2])
         result[itr % len(permutations_params)]["fevals"].append(scores[itr][3])
-    print(result)
+    return result
 
 
 def _executer(
@@ -64,20 +66,27 @@ def _executer(
     input_size,
 ):
     if verbose:
-        print(f"{input_index + 1}/{input_size} Starting:", permutations_params)
+        with print_mutex:
+            print(f"{input_index + 1}/{input_size} Starting:", permutations_params)
     start = time.time()
     _, best_score, score_per_iter, fevals_per_iter = optimizer_func(
         **seeded_opt_problem, **permutations_params
     )
     end = time.time()
     if verbose:
-        print(
-            f"{input_index + 1}/{input_size}",
-            f"Ended: {permutations_params};",
-            f"Score: {best_score};",
-            f"Time: {_float_format(end - start)} sec",
-        )
-    return best_score, (end - start), score_per_iter[-1][0], score_per_iter[-1][0] * fevals_per_iter
+        with print_mutex:
+            print(
+                f"{input_index + 1}/{input_size}",
+                f"Ended: {permutations_params};",
+                f"Score: {best_score};",
+                f"Time: {_float_format(end - start)} sec",
+            )
+    return (
+        best_score,
+        (end - start),
+        score_per_iter[-1][0],
+        score_per_iter[-1][0] * fevals_per_iter,
+    )
 
 
 def _float_format(val):
