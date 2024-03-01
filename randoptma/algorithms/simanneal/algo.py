@@ -75,8 +75,11 @@ def optimize(
                     RuntimeWarning,
                 )
                 break
-            if rng.random() < math.exp(
-                (new_score - best_score) / cool_schedule.next_T()
+            temp = cool_schedule.next_T()
+            if (
+                math.isclose(new_score, best_score)
+                or temp > 0.0
+                and rng.random() < math.exp((new_score - best_score) / temp)
             ):
                 best_sample, best_score = new_sample, new_score
         if is_new_sample == False:
