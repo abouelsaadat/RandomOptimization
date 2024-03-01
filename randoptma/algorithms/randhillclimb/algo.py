@@ -14,8 +14,8 @@ def optimize(
     n_iter_no_change=100,
     n_restarts_no_change=2,
     update_no_change=False,
-    max_iter=10000,
-    max_restarts=100,
+    max_iter=int(1e10),
+    max_restarts=int(1e10),
     seed=None,
     verbose=False,
 ):

@@ -15,7 +15,7 @@ def optimize(
     eval_func,
     cool_schedule=ArithmeticGeometric(),
     n_iter_no_change=1000,
-    max_iter=10000,
+    max_iter=int(1e10),
     seed=None,
     verbose=False,
 ):

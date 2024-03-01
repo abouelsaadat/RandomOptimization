@@ -22,7 +22,7 @@ def optimize(
     replaced_frac=0.4,
     mutation_rate=0.2,
     n_iter_no_change=10,
-    max_iter=1000,
+    max_iter=int(1e10),
     seed=None,
     verbose=False,
 ):
