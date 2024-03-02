@@ -44,6 +44,19 @@ class Geometric:
         return self.T
 
 
+class TunedGeometric:
+    def __init__(
+        self, init_T: float = 1e3, a: float = 0.8, tuned_val: float = 100
+    ) -> None:
+        self.factor = init_T / tuned_val
+        self.a = a ** (1 / self.factor)
+        self.T = tuned_val / self.a
+
+    def next_T(self):
+        self.T = self.a * self.T
+        return self.T * self.factor
+
+
 class Linear:
     def __init__(self, init_T: float = 1000, step: float = 10) -> None:
         self.T = init_T + step
