@@ -125,8 +125,12 @@ def optimize(
                 restart = True
             else:
                 last_elements_count = n_iter_no_change - max_idle_iters
+                # Remove extra iterations in each single run
                 for indx in end_pos[::-1]:
                     del score_per_iter[indx - last_elements_count : indx]
+                # Correct for iterations numbers
+                for indx in range(len(score_per_iter)):
+                    score_per_iter[indx] = (indx, score_per_iter[indx][1])
                 break
         else:
             max_idle_iters = max(max_idle_iters, idle_iters)
