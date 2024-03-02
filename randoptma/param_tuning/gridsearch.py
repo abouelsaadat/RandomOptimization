@@ -69,7 +69,7 @@ def _executer(
         with print_mutex:
             print(f"{input_index + 1}/{input_size} Starting:", permutations_params)
     start = time.time()
-    _, best_score, score_per_iter, fevals_per_iter = optimizer_func(
+    _, best_score, score_per_iter, total_fevals = optimizer_func(
         **seeded_opt_problem, **permutations_params
     )
     end = time.time()
@@ -84,8 +84,8 @@ def _executer(
     return (
         best_score,
         (end - start),
-        (score_per_iter[-1][0] + 1),
-        (score_per_iter[-1][0] + 1) * fevals_per_iter,
+        len(score_per_iter),
+        total_fevals,
     )
 
 

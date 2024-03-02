@@ -84,9 +84,10 @@ def optimize(
             ):
                 best_sample, best_score = new_sample, new_score
         if is_new_sample == False:
+            total_fevals = fevals_per_iter * len(score_per_iter)
             last_elements_count = n_iter_no_change - max_idle_iters
             del score_per_iter[-last_elements_count:]
             break
         else:
             max_idle_iters = max(max_idle_iters, idle_iters)
-    return best_sample, best_score, score_per_iter, fevals_per_iter
+    return best_sample, best_score, score_per_iter, total_fevals

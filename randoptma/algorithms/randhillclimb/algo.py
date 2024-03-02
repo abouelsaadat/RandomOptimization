@@ -124,6 +124,7 @@ def optimize(
             ):
                 restart = True
             else:
+                total_fevals = fevals_per_iter * len(score_per_iter)
                 last_elements_count = n_iter_no_change - max_idle_iters
                 # Remove extra iterations in each single run
                 for indx in end_pos[::-1]:
@@ -134,4 +135,4 @@ def optimize(
                 break
         else:
             max_idle_iters = max(max_idle_iters, idle_iters)
-    return best_sample, best_score, score_per_iter, fevals_per_iter
+    return best_sample, best_score, score_per_iter, total_fevals
