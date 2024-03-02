@@ -3,6 +3,7 @@
 # Author: Mohamed Abouelsaadat
 # License: MIT
 
+import math
 import warnings
 import numpy as np
 from ..utils.sampling import new_seed, initialize_uniform, one_variable_uniform
@@ -16,6 +17,7 @@ def optimize(
     update_no_change=False,
     max_iter=int(1e10),
     max_restarts=int(1e10),
+    epsilon=1e-3,
     seed=None,
     verbose=False,
 ):
@@ -40,6 +42,7 @@ def optimize(
     max_iter: total max iterations allowed
     max_restarts: max number of restarts allowed, value of 0 makes it
                   equivalent to single run of hill climbing
+    epsilon: smallest change taken into account as improvement
     seed: random seed to be used in random numbers generation, if None an arbitrary
           random value would be used as a seed.
     verbose: boolean value to switch on/off the printing of each iteration results
@@ -88,7 +91,7 @@ def optimize(
                     feat_dict=feat_dict, sample_x=local_best_sample, seed=new_seed(rng)
                 )
             new_score = eval_func(new_sample)
-            if new_score > local_best_score or restart == True:
+            if (new_score - local_best_score) >= epsilon or restart == True:
                 local_best_sample, local_best_score, is_new_sample = (
                     new_sample,
                     new_score,
@@ -105,9 +108,11 @@ def optimize(
                     RuntimeWarning,
                 )
                 break
-            if update_no_change and new_score == local_best_score:
+            if update_no_change and math.isclose(
+                new_score, local_best_score, abs_tol=epsilon
+            ):
                 local_best_sample, local_best_score = new_sample, new_score
-        if best_score < local_best_score:
+        if local_best_score > best_score:
             restarts_since_update = 0
             best_sample, best_score = local_best_sample, local_best_score
             score_per_iter.append((iteration + 1, best_score))

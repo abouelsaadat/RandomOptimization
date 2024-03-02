@@ -23,6 +23,7 @@ def optimize(
     mutation_rate=0.2,
     n_iter_no_change=10,
     max_iter=int(1e10),
+    epsilon=1e-3,
     seed=None,
     verbose=False,
 ):
@@ -40,6 +41,7 @@ def optimize(
     mutation_rate: mutation rate to be applied to new population (0..1)
     n_iter_no_change: number of iterations with no change in best score to determine convergence
     max_iter: total max iterations allowed
+    epsilon: smallest change taken into account as improvement
     seed: random seed to be used in random numbers generation, if None an arbitrary random seed is chosen
     verbose: boolean value to switch on/off the printing of each iteration results
 
@@ -97,8 +99,10 @@ def optimize(
                 new_sample_X, eval_func
             )
             if (
-                new_evals[new_best_index] > evals[best_index]
-                or math.isclose(new_evals[new_best_index], evals[best_index])
+                (new_evals[new_best_index] - evals[best_index]) >= epsilon
+                or math.isclose(
+                    new_evals[new_best_index], evals[best_index], abs_tol=epsilon
+                )
                 and new_evals[new_median_index] > evals[median_index]
             ):
                 sample_X, evals, best_index, median_index, is_new_sample = (

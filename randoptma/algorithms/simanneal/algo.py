@@ -16,6 +16,7 @@ def optimize(
     cool_schedule=ArithmeticGeometric(),
     n_iter_no_change=1000,
     max_iter=int(1e10),
+    epsilon=1e-3,
     seed=None,
     verbose=False,
 ):
@@ -28,10 +29,9 @@ def optimize(
         continuous ex : (-1, 1)
     eval_func: evaluation function used to measure performance of each sample.
     cool_schedule: temprature cooling schedule to be used.
-    update_no_change: whether to update to a newer sample with same score or not while testing for convergence,
-                      This could help traverse the plateau if stuck in one.
+    n_iter_no_change: number of iterations with no change in best score to determine convergence
     max_iter: total max iterations allowed
-    max_no_restarts: max number of iterations allowed
+    epsilon: smallest change taken into account as improvement
     seed: random seed to be used in random numbers generation, if None an arbitrary random seed is chosen
     verbose: boolean value to switch on/off the printing of each iteration results
 
@@ -66,7 +66,7 @@ def optimize(
                 feat_dict=feat_dict, sample_x=best_sample, seed=new_seed(rng)
             )
             new_score = eval_func(new_sample)
-            if new_score > best_score:
+            if (new_score - best_score) >= epsilon:
                 best_sample, best_score, is_new_sample = new_sample, new_score, True
                 score_per_iter.append((iteration + 1, best_score))
                 break
@@ -78,7 +78,7 @@ def optimize(
                 break
             temp = cool_schedule.next_T()
             if (
-                math.isclose(new_score, best_score)
+                math.isclose(new_score, best_score, abs_tol=epsilon)
                 or temp > 0.0
                 and rng.random() < math.exp((new_score - best_score) / temp)
             ):

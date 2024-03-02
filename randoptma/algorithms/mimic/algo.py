@@ -23,6 +23,7 @@ def optimize(
     weighted=False,
     n_iter_no_change=10,
     max_iter=int(1e10),
+    epsilon=1e-3,
     seed=None,
     verbose=False,
 ):
@@ -40,6 +41,7 @@ def optimize(
     weighted: Whether to take into account samples' fitness scores while building dependency trees or not
     n_iter_no_change: number of iterations with no change in best score to determine convergence
     max_iter: total max iterations allowed
+    epsilon: smallest change taken into account as improvement
     seed: random seed to be used in random numbers generation, if None an arbitrary random seed is chosen
     verbose: boolean value to switch on/off the printing of each iteration results
 
@@ -89,8 +91,10 @@ def optimize(
                 new_top_percentile_indices,
             ) = _get_evals(top_percentile, new_sample_X, eval_func)
             if (
-                new_evals[new_best_index] > evals[best_index]
-                or math.isclose(new_evals[new_best_index], evals[best_index])
+                (new_evals[new_best_index] - evals[best_index]) >= epsilon
+                or math.isclose(
+                    new_evals[new_best_index], evals[best_index], abs_tol=epsilon
+                )
                 and new_evals[new_median_index] > evals[median_index]
             ):
                 (
