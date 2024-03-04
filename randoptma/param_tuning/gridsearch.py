@@ -3,6 +3,7 @@
 # Author: Mohamed Abouelsaadat
 # License: MIT
 
+import os
 import time
 import itertools
 import numpy as np
@@ -18,7 +19,7 @@ def gridsearch(
     optimizer_params=None,
     seed=None,
     n_runs=10,
-    n_jobs=1,
+    n_jobs=None,
     verbose=False,
 ):
     if optimizer_params is None:
@@ -32,7 +33,7 @@ def gridsearch(
     seeded_opt_problem = [
         {"feat_dict": feat_dict, "eval_func": eval_func, "seed": seed} for seed in seeds
     ]
-    executer_params = zip(
+    executer_params_arr = zip(
         total_size * (optimizer_func,),
         n_runs * permutations_params,
         seeded_opt_problem,
@@ -40,8 +41,16 @@ def gridsearch(
         range(total_size),
         total_size * (total_size,),
     )
-    with Pool(n_jobs) as p:
-        scores = p.starmap(_executer, executer_params)
+    if n_jobs == None or n_jobs == 0:
+        scores = [
+            _executer(*executer_params) for executer_params in executer_params_arr
+        ]
+    else:
+        n_jobs = int(round(n_jobs))
+        while n_jobs < 0:
+            n_jobs += os.cpu_count()
+        with Pool(min(n_jobs + 1, os.cpu_count())) as p:
+            scores = p.starmap(_executer, executer_params_arr)
     result = list()
     for itr in range(len(permutations_params)):
         result.append(permutations_params[itr].copy())
