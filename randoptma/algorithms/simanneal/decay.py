@@ -11,16 +11,16 @@ class Bezier:
         self.span = init_T
         self.mid_pt = mid_point
         self.itr = -1
+        self.init_T = init_T
         self.a = init_T - 2 * self.mid_pt
         self.b = 2 * self.mid_pt
 
     def next_T(self) -> float:
-        self.itr += 1
+        self.itr = max(0, min(self.itr + 1, self.init_T))
         if math.isclose(self.a, 0.0):
             t = self.itr / self.b
         else:
             t = (-self.b + math.sqrt(self.b**2 + 4 * self.a * self.itr)) / (2 * self.a)
-        t = max(0, min(t, 1))
         return (1 - t) ** 2 * self.span + 2 * (1 - t) * t * self.mid_pt
 
 
