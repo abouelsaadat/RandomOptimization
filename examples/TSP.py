@@ -31,9 +31,19 @@ def TSP(input_x, positions):
 ENTRY_LENGTH = 10
 positions = np.random.default_rng().uniform(0, 100, (ENTRY_LENGTH, 2))
 plt.scatter(positions[:, 0], positions[:, 1])
+
+
+def problem_eval_function(input):
+    return TSP(input, positions)
+
+
+def problem_feat_dict():
+    return {feat: list(range(ENTRY_LENGTH)) for feat in range(ENTRY_LENGTH)}
+
+
 best_sample, best_score, *_ = mimic_algo.optimize(
-    {feat: list(range(ENTRY_LENGTH)) for feat in range(ENTRY_LENGTH)},
-    lambda input: TSP(input, positions),
+    problem_feat_dict(),
+    problem_eval_function,
 )
 print("smallest distance: ", -best_score)
 print(

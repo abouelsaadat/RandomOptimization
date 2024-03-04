@@ -27,10 +27,20 @@ def TSP(input_x, positions):
 
 ENTRY_LENGTH = 10
 positions = np.random.default_rng().uniform(0, 100, (ENTRY_LENGTH, 2))
+
+
+def problem_eval_function(input):
+    return TSP(input, positions)
+
+
+def problem_feat_dict():
+    return {feat: list(range(ENTRY_LENGTH)) for feat in range(ENTRY_LENGTH)}
+
+
 gridsearch(
     genetic_algo.optimize,
-    {feat: list(range(ENTRY_LENGTH)) for feat in range(ENTRY_LENGTH)},
-    lambda input: TSP(input, positions),
+    problem_feat_dict(),
+    problem_eval_function,
     optimizer_params={"pop_size": [500, 1000, 1500], "replaced_frac": [0.1, 0.2, 0.4]},
     n_runs=2,
     n_jobs=5,

@@ -51,11 +51,21 @@ clf = MLPClassifier(random_state=1, max_iter=300).fit(X, y)
 layers = (clf.n_features_in_, *clf.get_params()["hidden_layer_sizes"], clf.n_outputs_)
 print("default score:", clf.score(X, y))
 
-start = time.time()
 ENTRY_LENGTH = calculate_length_layers(layers)
+
+
+def problem_eval_function(input):
+    return evaluate_mlp_clf(clf, *pack_weights(input, layers), X, y)
+
+
+def problem_feat_dict():
+    return {feat: (-1, 1) for feat in range(ENTRY_LENGTH)}
+
+
+start = time.time()
 best_sample, best_score, score_per_iter, total_fevals = genetic_algo.optimize(
-    {feat: (-1, 1) for feat in range(ENTRY_LENGTH)},
-    lambda input: evaluate_mlp_clf(clf, *pack_weights(input, layers), X, y),
+    problem_feat_dict(),
+    problem_eval_function,
 )
 end = time.time()
 print(f"elapsed time: {end - start}")

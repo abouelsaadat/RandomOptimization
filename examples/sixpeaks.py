@@ -78,9 +78,19 @@ if False:
 
 ENTRY_LENGTH = 50
 ENTRY_T_PEAK = int(0.3 * ENTRY_LENGTH)
+
+
+def problem_eval_function(input):
+    return sixpeaks(input, ENTRY_T_PEAK)
+
+
+def problem_feat_dict():
+    return {feat: [0, 1] for feat in range(ENTRY_LENGTH)}
+
+
 best_sample, best_score, *_ = genetic_algo.optimize(
-    {feat: [0, 1] for feat in range(ENTRY_LENGTH)},
-    lambda input: sixpeaks(input, ENTRY_T_PEAK),
+    problem_feat_dict(),
+    problem_eval_function,
 )
 print("best score: ", best_score)
 print("best sample: ", ";".join(str(int(bit)) for bit in best_sample))

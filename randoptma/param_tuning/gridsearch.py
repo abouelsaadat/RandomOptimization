@@ -6,7 +6,7 @@
 import time
 import itertools
 import numpy as np
-from multiprocess import Pool, Lock
+from multiprocessing import Pool, Lock
 
 print_mutex = Lock()
 

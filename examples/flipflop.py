@@ -17,9 +17,19 @@ def flipflop(input_x):
 
 
 ENTRY_LENGTH = 50
+
+
+def problem_eval_function(input):
+    return flipflop(input)
+
+
+def problem_feat_dict():
+    return {feat: [0, 1] for feat in range(ENTRY_LENGTH)}
+
+
 best_sample, best_score, *_ = genetic_algo.optimize(
-    {feat: [0, 1] for feat in range(ENTRY_LENGTH)},
-    lambda input: flipflop(input),
+    problem_feat_dict(),
+    problem_eval_function,
 )
 print("best score: ", best_score)
 print("best sample: ", ";".join(str(int(bit)) for bit in best_sample))

@@ -21,11 +21,21 @@ def nqueens(input_x):
     return len(queens)
 
 
-start = time.time()
 ENTRY_LENGTH = 50
+
+
+def problem_eval_function(input):
+    return nqueens(input)
+
+
+def problem_feat_dict():
+    return {feat: list(range(ENTRY_LENGTH)) for feat in range(ENTRY_LENGTH)}
+
+
+start = time.time()
 best_sample, best_score, *_ = simanneal_algo.optimize(
-    {feat: list(range(ENTRY_LENGTH)) for feat in range(ENTRY_LENGTH)},
-    lambda input: nqueens(input),
+    problem_feat_dict(),
+    problem_eval_function,
 )
 end = time.time()
 print("elapsed time:", end - start)

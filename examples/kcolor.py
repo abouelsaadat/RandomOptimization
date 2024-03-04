@@ -33,9 +33,19 @@ edges = rng.integers(ENTRY_LENGTH, size=(rng.integers(2 * K, ENTRY_LENGTH**2 / 4
 edges = np.delete(
     edges, np.where(edges[:, 0] == edges[:, 1])[0], axis=0
 )  # delete circular edges
+
+
+def problem_eval_function(input):
+    return kcolor(input, edges)
+
+
+def problem_feat_dict():
+    return {feat: list(range(K)) for feat in range(ENTRY_LENGTH)}
+
+
 best_sample, best_score, *_ = mimic_algo.optimize(
-    {feat: list(range(K)) for feat in range(ENTRY_LENGTH)},
-    lambda input: kcolor(input, edges),
+    problem_feat_dict(),
+    problem_eval_function,
 )
 print("best score: ", best_score)
 print("best sample: ", ";".join(str(int(bit)) for bit in best_sample))
