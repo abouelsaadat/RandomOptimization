@@ -72,15 +72,22 @@ def optimize(
                 "\nbest sample:",
                 ";".join(str(feature_val) for feature_val in sample_X[best_index]),
             )
-        dict_keys = [*feat_dict]
-        top_evals = evals[top_percentile_indices]
-        top_sample_X = sample_X[top_percentile_indices]
-        edges = build_mst(rng.choice(dict_keys), dict_keys, top_sample_X)
-        model = _fit_bayesian_model(feat_dict, edges, top_sample_X, top_evals, weighted)
+        # Build new population
         is_new_sample = False
+        new_model_required = True
         for idle_iters in range(n_iter_no_change):
             if len(score_per_iter) <= iteration:
                 score_per_iter.append((iteration, evals[best_index]))
+            if new_model_required:
+                new_model_required = False
+                model = _build_model(
+                    feat_dict,
+                    sample_X,
+                    evals,
+                    top_percentile_indices,
+                    weighted,
+                    seed=new_seed(rng),
+                )
             new_sample_X = _generate_new_samples(
                 n_samples, feat_dict, model, new_seed(rng)
             )
@@ -90,13 +97,7 @@ def optimize(
                 new_median_index,
                 new_top_percentile_indices,
             ) = _get_evals(top_percentile, new_sample_X, eval_func)
-            if (
-                (new_evals[new_best_index] - evals[best_index]) >= epsilon
-                or math.isclose(
-                    new_evals[new_best_index], evals[best_index], abs_tol=epsilon
-                )
-                and new_evals[new_median_index] > evals[median_index]
-            ):
+            if (new_evals[new_best_index] - evals[best_index]) >= epsilon:
                 (
                     sample_X,
                     evals,
@@ -120,6 +121,27 @@ def optimize(
                     RuntimeWarning,
                 )
                 break
+            if (
+                math.isclose(
+                    new_evals[new_best_index], evals[best_index], abs_tol=epsilon
+                )
+                and new_evals[new_median_index] > evals[median_index]
+            ):
+                (
+                    sample_X,
+                    evals,
+                    best_index,
+                    median_index,
+                    top_percentile_indices,
+                    new_model_required,
+                ) = (
+                    new_sample_X,
+                    new_evals,
+                    new_best_index,
+                    new_median_index,
+                    new_top_percentile_indices,
+                    True,
+                )
         if is_new_sample == False:
             total_fevals = fevals_per_iter * len(score_per_iter)
             last_elements_count = n_iter_no_change - max_idle_iters
@@ -146,7 +168,7 @@ def _generate_new_samples(
     # Suppress console output and warnings
     with warnings.catch_warnings(), contextlib.redirect_stderr(io.StringIO()):
         warnings.simplefilter("ignore")
-        sample_X = model.simulate(n_samples=n_samples, seed=seed)[
+        sample_X = model.simulate(n_samples=n_samples, seed=seed, show_progress=False)[
             sorted_keys
         ].to_numpy()
     return sample_X
@@ -162,6 +184,18 @@ def _get_evals(top_percentile, sample_X, eval_func):
     return evals, best_index, median_index, top_percentile_indices
 
 
+def _build_model(
+    feat_dict, sample_X, evals, top_percentile_indices, weighted, seed=None
+):
+    dict_keys = [*feat_dict]
+    rng = np.random.default_rng(seed)
+    top_evals = evals[top_percentile_indices]
+    top_sample_X = sample_X[top_percentile_indices]
+    edges = build_mst(rng.choice(dict_keys), dict_keys, top_sample_X)
+    model = _fit_bayesian_model(feat_dict, edges, top_sample_X, top_evals, weighted)
+    return model
+
+
 def _fit_bayesian_model(feat_dict, edges, top_sample_X, top_evals, weighted):
     sorted_keys = sorted(feat_dict.keys())
     model = BayesianNetwork(edges)
@@ -174,5 +208,6 @@ def _fit_bayesian_model(feat_dict, edges, top_sample_X, top_evals, weighted):
         estimator=BayesianEstimator,
         prior_type="K2",
         weighted=weighted,
+        n_jobs=1,
     )
     return model

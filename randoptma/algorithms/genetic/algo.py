@@ -98,13 +98,7 @@ def optimize(
             new_evals, new_best_index, new_median_index = _get_evals(
                 new_sample_X, eval_func
             )
-            if (
-                (new_evals[new_best_index] - evals[best_index]) >= epsilon
-                or math.isclose(
-                    new_evals[new_best_index], evals[best_index], abs_tol=epsilon
-                )
-                and new_evals[new_median_index] > evals[median_index]
-            ):
+            if (new_evals[new_best_index] - evals[best_index]) >= epsilon:
                 sample_X, evals, best_index, median_index, is_new_sample = (
                     new_sample_X,
                     new_evals,
@@ -120,6 +114,18 @@ def optimize(
                     RuntimeWarning,
                 )
                 break
+            if (
+                math.isclose(
+                    new_evals[new_best_index], evals[best_index], abs_tol=epsilon
+                )
+                and new_evals[new_median_index] > evals[median_index]
+            ):
+                sample_X, evals, best_index, median_index = (
+                    new_sample_X,
+                    new_evals,
+                    new_best_index,
+                    new_median_index,
+                )
         if is_new_sample == False:
             total_fevals = fevals_per_iter * len(score_per_iter)
             last_elements_count = n_iter_no_change - max_idle_iters
