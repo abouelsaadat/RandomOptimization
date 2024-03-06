@@ -51,7 +51,7 @@ def optimize(
     """
     sample_X = None
     score_per_iter = list()
-    fevals_per_iter = int(top_percentile * n_samples)
+    fevals_per_iter = n_samples
     max_idle_iters = 1
     rng = np.random.default_rng(seed)
     _iter_ = iter(range(max_iter))
