@@ -80,7 +80,7 @@ def optimize(
             )
         for idle_iters in range(n_iter_no_change):
             if len(score_per_iter) <= iteration:
-                score_per_iter.append((iteration, best_score))
+                score_per_iter.append((iteration, best_score, best_sample))
             is_new_sample = False
             if restart:
                 new_sample = initialize_uniform(
@@ -115,7 +115,7 @@ def optimize(
         if local_best_score > best_score:
             restarts_since_update = 0
             best_sample, best_score = local_best_sample, local_best_score
-            score_per_iter.append((iteration + 1, best_score))
+            score_per_iter.append((iteration + 1, best_score, best_sample))
         if is_new_sample == False:
             end_pos.append(len(score_per_iter))
             if (
@@ -131,7 +131,7 @@ def optimize(
                     del score_per_iter[indx - last_elements_count : indx]
                 # Correct for iterations numbers
                 for indx in range(len(score_per_iter)):
-                    score_per_iter[indx] = (indx, score_per_iter[indx][1])
+                    score_per_iter[indx] = (indx, score_per_iter[indx][1], score_per_iter[indx][2])
                 break
         else:
             max_idle_iters = max(max_idle_iters, idle_iters)

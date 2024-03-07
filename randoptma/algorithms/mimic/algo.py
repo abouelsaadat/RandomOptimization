@@ -77,7 +77,9 @@ def optimize(
         new_model_required = True
         for idle_iters in range(n_iter_no_change):
             if len(score_per_iter) <= iteration:
-                score_per_iter.append((iteration, evals[best_index]))
+                score_per_iter.append(
+                    (iteration, evals[best_index], sample_X[best_index])
+                )
             if new_model_required:
                 new_model_required = False
                 model = _build_model(
@@ -113,7 +115,9 @@ def optimize(
                     new_top_percentile_indices,
                     True,
                 )
-                score_per_iter.append((iteration + 1, evals[best_index]))
+                score_per_iter.append(
+                    (iteration + 1, evals[best_index], sample_X[best_index])
+                )
                 break
             elif (iteration := next(_iter_, None)) is None:
                 warnings.warn(

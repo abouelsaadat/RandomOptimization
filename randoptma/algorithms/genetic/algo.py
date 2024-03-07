@@ -78,7 +78,9 @@ def optimize(
         is_new_sample = False
         for idle_iters in range(n_iter_no_change):
             if len(score_per_iter) <= iteration:
-                score_per_iter.append((iteration, evals[best_index]))
+                score_per_iter.append(
+                    (iteration, evals[best_index], sample_X[best_index])
+                )
             new_sample_X = np.empty([pop_size, len(feat_dict)])
             new_sample_X[:keep_size, :] = _next_keep_population(
                 sample_X,
@@ -106,7 +108,9 @@ def optimize(
                     new_median_index,
                     True,
                 )
-                score_per_iter.append((iteration + 1, evals[best_index]))
+                score_per_iter.append(
+                    (iteration + 1, evals[best_index], sample_X[best_index])
+                )
                 break
             elif (iteration := next(_iter_, None)) is None:
                 warnings.warn(

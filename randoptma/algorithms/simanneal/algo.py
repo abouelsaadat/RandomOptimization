@@ -61,14 +61,14 @@ def optimize(
         is_new_sample = False
         for idle_iters in range(n_iter_no_change):
             if len(score_per_iter) <= iteration:
-                score_per_iter.append((iteration, best_score))
+                score_per_iter.append((iteration, best_score, best_sample))
             new_sample = one_variable_uniform(
                 feat_dict=feat_dict, sample_x=best_sample, seed=new_seed(rng)
             )
             new_score = eval_func(new_sample)
             if (new_score - best_score) >= epsilon:
                 best_sample, best_score, is_new_sample = new_sample, new_score, True
-                score_per_iter.append((iteration + 1, best_score))
+                score_per_iter.append((iteration + 1, best_score, best_sample))
                 break
             elif (iteration := next(_iter_, None)) is None:
                 warnings.warn(
